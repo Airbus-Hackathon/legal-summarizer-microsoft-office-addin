@@ -9,6 +9,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  position: relative;
 }
 
 ul {
@@ -39,6 +40,7 @@ ul {
   -webkit-flex: 1 0 0;
   flex: 1 0 0;
   padding: 10px 20px;
+  position: relative;
 }
 
 .ms-welcome__main > h2 {
@@ -79,7 +81,7 @@ b {
   font-weight: bold;
 }
 
-.summarize-btn {
+.btn {
   padding-left: 1rem;
   padding-right: 1rem;
   padding-top: 0.5rem;
@@ -88,9 +90,10 @@ b {
   border-radius: 0.25rem;
   color: white;
   cursor: pointer;
+  text-transform: uppercase;
 }
 
-.summarize-btn:hover {
+.btn:hover {
   background-color: #1d4986;
 }
 
@@ -98,6 +101,77 @@ b {
   margin-top: 2rem;
 }
 
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
 .font-bold {
   font-weight: bold;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.loading-overlay.hidden {
+  display: none;
+}
+
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0.15rem solid #1d4986;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+#alert {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+#alert.hidden {
+  display: none;
 }

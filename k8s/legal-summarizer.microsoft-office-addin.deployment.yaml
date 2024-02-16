@@ -1,0 +1,116 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: legal-summarizer
+  labels:
+    tier: legal-summarizer
+spec:
+  storageClassName: nfs
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-templates
+data:
+  default.conf.template: |
+    server {
+      listen 8080;
+      server_name legal-summarizer.students-epitech.ovh;
+
+      location / {
+        alias /home/legal-summarizer/dist/;
+        try_files $uri =404;
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legal-summarizer
+  labels:
+    tier: legal-summarizer
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: legal-summarizer
+  template:
+    metadata:
+      labels:
+        tier: legal-summarizer
+    spec:
+      initContainers:
+        - name: data-loader
+          image: antoineleguillou/alpine-curl:latest
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -o errexit
+              mkdir -p /home/legal-summarizer 
+              cd /home/legal-summarizer
+              curl -H "Authorization: token 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" \
+              -H "Accept: application/vnd.github.v3.raw" \
+              -o ./legal-summarizer-microsoft-office-addin.tar.gz \
+              -L https://raw.githubusercontent.com/Airbus-Hackathon/legal-summarizer-microsoft-office-addin/main/archive/legal-summarizer-microsoft-office-addin.tar.gz
+
+              tar -xf ./legal-summarizer-microsoft-office-addin.tar.gz
+              chmod 777 ./dist
+              chown 1001:0 ./dist
+
+          volumeMounts:
+            - name: data
+              mountPath: "/home"
+
+      containers:
+        - name: legal-summarizer
+          image: nginx:1.24.0
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: 350m
+              memory: 450Mi
+            requests:
+              cpu: 250m
+              memory: 250Mi
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: /etc/nginx/templates
+              name: nginx-templates
+            - name: data
+              mountPath: "/home"
+
+      restartPolicy: Always
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: legal-summarizer
+        - name: nginx-templates
+          configMap:
+            name: nginx-templates
+---
+# legal-summarizer SERVICES
+apiVersion: v1
+kind: Service
+metadata:
+  name: legal-summarizer-service
+spec:
+  selector:
+    tier: legal-summarizer
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: public

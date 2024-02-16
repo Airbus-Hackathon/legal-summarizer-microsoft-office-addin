@@ -23,6 +23,7 @@
   </head>
 
   <body class="ms-font-m ms-welcome ms-Fabric">
+    <div id="alert" class="hidden">An unexpected error occured, please try again.</div>
     <header class="ms-welcome__header ms-bgColor-neutralLighter">
       <img width="90" height="90" src="../../assets/logo-filled.png" alt="Contoso" title="Contoso" />
     </header>
@@ -40,13 +41,21 @@
     <main id="app-body" class="ms-welcome__main" style="display: none">
       <p>
         Introducing the Airbus Helicopters Legal Contract Summarizer: Your essential Microsoft Word add-in for swiftly
-        summarizing intricate contract documents. This tool streamlines the extraction of crucial information,
-        highlights key clauses, and maintains consistent terminology. Seamlessly integrated into your workflow, it
-        expedites contract review, empowering informed decisions and enhancing contract management.
+        summarizing intricate contract documents clauses.
       </p>
-      <p class="font-bold">Click &quot;Summarize Document&quot; for your instant summary.</p>
-      <div role="button" id="summarize" class="summarize-btn mt-8">
+      <p>
+        <span class="font-bold">Select some text</span> and
+        <span class="font-bold">Click &quot;Summarize Document&quot;</span> we will append your summary in red after
+        your selection.
+      </p>
+      <div role="button" id="summarize" class="btn mt-8">
         <span class="ms-Button-label">summarize document</span>
+      </div>
+      <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loader-container">
+          <span class="loader"></span>
+          <p>Loading...</p>
+        </div>
       </div>
     </main>
   </body>
